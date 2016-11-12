@@ -6,13 +6,13 @@ import (
 	"crypto/md5"
 	"encoding/base64"
 	"errors"
+	"fmt"
 	"github.com/sloonz/go-qprintable"
 	"gopkg.in/iconv.v1"
+	"io"
 	"io/ioutil"
 	"regexp"
 	"strings"
-	"io"
-	"fmt"
 )
 
 func validateEmailData(client *Client) (user string, host string, addr_err error) {
@@ -48,7 +48,9 @@ func extractEmail(str string) (name string, host string, err error) {
 	}
 	return name, host, err
 }
+
 var mimeRegex, _ = regexp.Compile(`=\?(.+?)\?([QBqp])\?(.+?)\?=`)
+
 // Decode strings in Mime header format
 // eg. =?ISO-2022-JP?B?GyRCIVo9dztSOWJAOCVBJWMbKEI=?=
 func mimeHeaderDecode(str string) string {
@@ -82,6 +84,7 @@ func mimeHeaderDecode(str string) string {
 }
 
 var valihostRegex, _ = regexp.Compile(`^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$`)
+
 func validHost(host string) string {
 	host = strings.Trim(host, " ")
 	if valihostRegex.MatchString(host) {
@@ -135,8 +138,8 @@ func fromQuotedP(data string) string {
 	return string(res)
 }
 
-
 var charsetRegex, _ = regexp.Compile(`[_:.\/\\]`)
+
 func fixCharset(charset string) string {
 	fixed_charset := charsetRegex.ReplaceAllString(charset, "-")
 	// Fix charset
@@ -163,7 +166,7 @@ func fixCharset(charset string) string {
 func md5hex(stringArguments ...*string) string {
 	h := md5.New()
 	var r *strings.Reader
-	for i:=0; i < len(stringArguments); i++ {
+	for i := 0; i < len(stringArguments); i++ {
 		r = strings.NewReader(*stringArguments[i])
 		io.Copy(h, r)
 	}
@@ -176,7 +179,7 @@ func compress(stringArguments ...*string) string {
 	var b bytes.Buffer
 	var r *strings.Reader
 	w, _ := zlib.NewWriterLevel(&b, zlib.BestSpeed)
-	for i:=0; i < len(stringArguments); i++ {
+	for i := 0; i < len(stringArguments); i++ {
 		r = strings.NewReader(*stringArguments[i])
 		io.Copy(w, r)
 	}

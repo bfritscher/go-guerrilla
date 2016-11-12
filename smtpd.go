@@ -235,7 +235,7 @@ func (server *SmtpdServer) handleClient(client *Client) {
 				}
 
 			} else {
-				if (err == INPUT_LIMIT_EXCEEDED) {
+				if err == INPUT_LIMIT_EXCEEDED {
 					// hard limit reached, end to make room for other clients
 					responseAdd(client, "550 Error: DATA limit exceeded by more than a megabyte!")
 					killClient(client)
@@ -321,12 +321,10 @@ type smtpBufferedReader struct {
 	alr *adjustableLimitedReader
 }
 
-
 // delegate to the adjustable limited reader
 func (sbr *smtpBufferedReader) setLimit(n int64) {
 	sbr.alr.setLimit(n)
 }
-
 
 // allocate a new smtpBufferedReader
 func newSmtpBufferedReader(rd io.Reader) *smtpBufferedReader {

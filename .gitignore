@@ -1,3 +1,6 @@
 .idea
 goguerrilla.conf
 go-guerrilla
+src
+pkg
+bin

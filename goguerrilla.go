@@ -31,7 +31,6 @@ import (
 
 var allowedHosts = make(map[string]bool, 15)
 
-
 var signalChannel = make(chan os.Signal, 1) // for trapping SIG_HUB
 
 func sigHandler() {
@@ -71,7 +70,7 @@ func runServer(sConfig ServerConfig) (err error) {
 	server.openLog()
 
 	// configure ssl
-	if (sConfig.Tls_always_on || sConfig.Start_tls_on) {
+	if sConfig.Tls_always_on || sConfig.Start_tls_on {
 		cert, err := tls.LoadX509KeyPair(sConfig.Public_key_file, sConfig.Private_key_file)
 		if err != nil {
 			server.logln(2, fmt.Sprintf("There was a problem with loading the certificate: %s", err))
@@ -83,7 +82,6 @@ func runServer(sConfig ServerConfig) (err error) {
 		}
 		server.tlsConfig.Rand = rand.Reader
 	}
-
 
 	// configure timeout
 	server.timeout = time.Duration(sConfig.Timeout)
@@ -124,7 +122,7 @@ func main() {
 	initialise()
 	if err := testDbConnections(); err != nil {
 		fmt.Println(err)
-		os.Exit(1);
+		os.Exit(1)
 	}
 	// start some savemail workers
 	for i := 0; i < mainConfig.Save_workers_size; i++ {
